@@ -5,6 +5,7 @@ drake
 
 Requirements
 ------------
+
 * Ruby 1.9.*
 * Redis (default 127.0.0.1:6379)
 
@@ -16,6 +17,11 @@ Run
     bundle install
     ruby app.rb
   
+Test
+----
+
+    cd drake
+    rspec --format nested
 
 Copyright
 ---------
