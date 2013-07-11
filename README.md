@@ -26,4 +26,4 @@ Test
 Copyright
 ---------
 
-Copyright © 2013 RealSelf, Inc. See LICENSE for details.
+Copyright © 2013 RealSelf, Inc. See [LICENSE](https://raw.github.com/RealSelf/drake/master/LICENSE) for details.
