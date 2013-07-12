@@ -21,7 +21,7 @@ Test
 ----
 
     cd drake
-    rspec --format nested
+    rspec --format documentation
 
 Copyright
 ---------

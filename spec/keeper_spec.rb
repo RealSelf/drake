@@ -3,36 +3,49 @@ require 'spec_helper'
 describe Keeper do 
 
   def fake_redis
-    redis = double('Redis')
+    double('Redis')
   end
   
   before :each do
-    @redis = fake_redis
-    @keeper = Keeper.new(@redis)
+    Keeper.redis = fake_redis
+    @keeper = Keeper.new
   end
 
-  describe "#new" do
-    it "takes a redis instance as a paramater and sets it as a instance variable" do
-      @keeper.instance_eval{ @redis }.should eql @redis
+  describe "#save" do
+    it "takes a hash and saves it to Redis with one Redis field per hash key" do
+      hash = {
+        :id => Random.rand(5000),
+        :env => 'production',
+        :tag => 'master',
+        :name => 'sam',
+        :start => nil,
+        :log => nil,
+        :cmd => 'cd /var/deploy; ./deploy.sh production master sam'
+      }
+
+      Keeper.redis.should_receive(:set)
+        .exactly(hash.length).times
+        .with(kind_of(String), kind_of(String))
+      
+      @keeper.save(hash)
     end
   end
 
-
   describe "#next_id" do
     it "sets the counter value to 0 if the key doesn't exist" do
-      @redis.stub(:incr) {1}
+      Keeper.redis.stub(:incr) {1}
 
-      @redis.should_receive(:incr).with(@keeper.counter_key)
-      @redis.should_receive(:setnx).with(@keeper.counter_key, 0)
+      Keeper.redis.should_receive(:incr).with(@keeper.counter_key)
+      Keeper.redis.should_receive(:setnx).with(@keeper.counter_key, 0)
 
       @keeper.next_id.should eql 1
     end
 
     it "gets the next deploy id and increments the counter" do
-      @redis.stub(:setnx) {0}
-      @redis.stub(:incr) {2329}
+      Keeper.redis.stub(:setnx) {0}
+      Keeper.redis.stub(:incr) {2329}
 
-      @redis.should_receive(:incr).with(@keeper.counter_key)
+      Keeper.redis.should_receive(:incr).with(@keeper.counter_key)
 
       @keeper.next_id.should eql 2329
     end
@@ -54,7 +67,7 @@ describe Keeper do
       log_line = "[you are a god] Everything went totally awesome\n"
 
       key = @keeper.key(deploy_id, 'log')
-      @redis.should_receive(:append).with(key, log_line)
+      Keeper.redis.should_receive(:append).with(key, log_line)
 
       @keeper.log(deploy_id, log_line)
     end

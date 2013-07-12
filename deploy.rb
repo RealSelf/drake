@@ -2,10 +2,11 @@ require 'date'
 require_relative 'runner'
 
 class Deploy
-  REDIS_BRANCH = 'deploy'
+  class << self
+    attr_accessor :runner, :keeper
+  end
 
   attr_reader :env, :tag, :name, :id, :start
-  attr_writer :runner, :redis
 
   def initialize(env, tag, name)
     @env = env
@@ -15,6 +16,7 @@ class Deploy
 
   def to_hash
     {
+      :id => @id,
       :env => @env,
       :tag => @tag,
       :name => @name,
@@ -29,18 +31,29 @@ class Deploy
   end
 
   def save
-    @keeper.save(self)
+    if @id.nil?
+      @id = keeper.next_id
+    end
+    keeper.save(to_hash)
   end
 
   def log(line)
-    @keeper.log(@id, line)
+    keeper.log(@id, line)
   end
 
   def run!
     @id = 1
     @start = DateTime.now.strftime('%s').to_i
 
-    @runner.run(self)
+    runner.run(self)
+  end
+
+  def runner
+    self.class.runner
+  end  
+
+  def keeper
+    self.class.keeper
   end
 
 end
