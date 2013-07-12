@@ -10,7 +10,7 @@ class Runner
     out_thr = Thread.new do
       Thread.current.abort_on_exception = true
       while(line = stdout.gets)
-        deploy.log(line)
+        deploy.log_line(line)
       end
       stdout.close
     end
@@ -18,7 +18,7 @@ class Runner
     err_thr = Thread.new do
       Thread.current.abort_on_exception = true
       while(line = stderr.gets)
-        deploy.log(line)
+        deploy.log_line(line)
       end
       stderr.close
     end

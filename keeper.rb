@@ -5,6 +5,16 @@ class Keeper
     attr_accessor :redis
   end
 
+  def get(id)
+    hash = Hash.new
+    
+    Deploy.attrs.each do |a|
+      hash[a] = redis.get(key(id, a))
+    end
+
+    Deploy.from_hash(hash)
+  end
+
   def log(id, line)
     redis.append(key(id, 'log'), line)
   end

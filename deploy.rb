@@ -4,6 +4,22 @@ require_relative 'runner'
 class Deploy
   class << self
     attr_accessor :runner, :keeper
+
+    def get(id)
+      keeper.get(id)
+    end
+
+    def from_hash(h)
+      d = self.allocate
+      h.each do |k,v|
+        d.instance_variable_set("@#{k}", v)
+      end
+      d
+    end
+
+    def attrs
+      [:id, :env, :tag, :name, :start, :log, :cmd]
+    end
   end
 
   attr_reader :env, :tag, :name, :id, :start
@@ -37,14 +53,17 @@ class Deploy
     keeper.save(to_hash)
   end
 
-  def log(line)
+  def log_line(line)
     keeper.log(@id, line)
   end
 
-  def run!
-    @id = 1
-    @start = DateTime.now.strftime('%s').to_i
+  def log
+    @log
+  end
 
+  def run!
+    @start = DateTime.now.strftime('%s').to_i
+    save
     runner.run(self)
   end
 

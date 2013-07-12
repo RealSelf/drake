@@ -11,6 +11,10 @@ class App < Sinatra::Base
   Deploy.runner = Runner.new
   Deploy.keeper = Keeper.new
 
+  get '/' do
+    erb :index
+  end
+
   post '/deploy/' do
     d = Deploy.new(params[:env], params[:tag], params[:name])
     d.run!
@@ -39,5 +43,6 @@ class App < Sinatra::Base
 
     erb :'deploy/list', :locals => {:deploys => all}
   end
-
 end
+
+App.run!({:port => 3000})
