@@ -1,12 +1,17 @@
-<ol>
-  <li><%= deploy.env %></li>
-  <li><%= deploy.tag %></li>
-  <li><%= deploy.name %></li>
-  <li><%= deploy.id %></li>
-  <li><%= deploy.start %></li>
-</ol>
+<div class="row span8 offset2">
+  <h1><%= deploy.name %><small> deployed </small><%= deploy.tag %><small> to </small><%= deploy.env %></h1>
+</div>
 
-<pre>
-<%= deploy.log %>
-</pre>
+<div class="row span8 offset2">
+  <span>
+      <%= deploy.start.strftime('%l:%M%P') %> <small class="muted"><%= deploy.start.strftime('%m/%d/%y') %></small>
+  </span>
+</div>
+<div class="row span8 offset2">
+    <span class="label label-info pull-right">command</span>
+    <pre><%= deploy.cmd %></pre>
+</div>
 
+<div class="row span8 offset2">
+  <pre><%= deploy.log %></pre>
+</div>

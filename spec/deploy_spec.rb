@@ -114,9 +114,9 @@ describe Deploy do
     end
   end
 
-  describe "#cmd" do
+  describe "#gen_cmd" do
     it "generates a shell command from instance variables" do
-      @deploy.instance_eval{ cmd }.should eql "bundle exec cap chef deploy -e production -t master -n sam"
+      @deploy.instance_eval{ gen_cmd }.should eql "cd ~/code/Stock; bundle exec cap chef deploy -s chef_environment=production -s tag=master -s deployed_by=sam"
     end
   end
 

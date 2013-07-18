@@ -1,3 +1,5 @@
+require 'date'
+
 class Keeper
   BASE = 'deploy'
 
@@ -7,10 +9,12 @@ class Keeper
 
   def get(id)
     hash = Hash.new
-    
+
     Deploy.attrs.each do |a|
       hash[a] = redis.get(key(id, a))
     end
+
+    hash[:start] = Time.at(hash[:start].to_i).to_datetime
 
     Deploy.from_hash(hash)
   end
@@ -21,7 +25,7 @@ class Keeper
 
   def save(hash)
     hash.each do |k,v|
-      redis.set(key(hash[:id], k), v.to_s)  
+      redis.set(key(hash[:id], k), v.to_s)
     end
   end
 

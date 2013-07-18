@@ -22,7 +22,7 @@ class Deploy
     end
   end
 
-  attr_reader :env, :tag, :name, :id, :start
+  attr_reader :env, :tag, :name, :id, :start, :log, :cmd
 
   def initialize(env, tag, name)
     @env = env
@@ -38,12 +38,8 @@ class Deploy
       :name => @name,
       :start => @start,
       :log => @log,
-      :cmd => cmd
+      :cmd => @cmd
     }
-  end
-
-  def cmd
-    "bundle exec cap chef deploy -e #{@env} -t #{@tag} -n #{@name}"
   end
 
   def save
@@ -61,8 +57,13 @@ class Deploy
     @log
   end
 
+  def gen_cmd
+    "cd ~/code/Stock; bundle exec cap chef deploy -s chef_environment=#{@env} -s tag=#{@tag} -s deployed_by=#{@name}"
+  end
+
   def run!
     @start = DateTime.now.strftime('%s').to_i
+    @cmd = gen_cmd
     save
     runner.run(self)
   end

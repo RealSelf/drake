@@ -2,7 +2,7 @@ require 'open3'
 
 class Runner
   def run(deploy)
-    stdin, stdout, stderr, wait_thr = Open3.popen3("echo #{deploy.cmd} | sh")
+    stdin, stdout, stderr, wait_thr = Open3.popen3(deploy.cmd.strip)
 
     # Must close all IO streams explicitly
     stdin.close  

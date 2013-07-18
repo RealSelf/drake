@@ -1,36 +1,14 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang='en'>
-  <head>
-    <link href='/css/bootstrap.css' rel='stylesheet' />
-  </head>
-  <body>
-    <div class='navbar'>
-      <div class='navbar-inner'>
-        <div class='container'>
-          <div class='brand'>
-            Deployer
-          </div>
-        </div>
+<div class="row span8 offset2">
+  <form class='form-stacked' action='/deploy/' method='post'>
+    <div class='form-actions'>
+      <div class='control-group'>
+        <input class='input-xlarge' name='env' id='env' placeholder='environment' type='text'/>
+        <input class='input-xlarge' name='tag' id='tag' placeholder='git tag' type='text'/>
+        <input class='input-xlarge' name='name' id='name' placeholder='your name' type='text'/>
+      </div>
+      <div>
+        <input class='btn btn-warning' id='deploy' type='submit' value="Deploy!"/>
       </div>
     </div>
-    <div class='container'>
-      <form class='form-stacked' action='/deploy/' method='post'>
-        <div class='form-actions'>
-          <div class='control-group'>
-            <input class='input-xlarge' name='env' id='env' placeholder='environment' type='text' />
-            <input class='input-xlarge' name='tag' id='tag' placeholder='git tag' type='text' />
-            <input class='input-xlarge' name='name' id='name' placeholder='your name' type='text' />
-          </div>
-          <div>
-            <input class='btn btn-warning' id='deploy' type='submit' value="Deploy!"/>
-          </div>
-        </div>
-      </form>
-      <pre class='output' style="height:300px;overflow-y:scroll"></pre>
-    </div>
-    <script src='http://code.jquery.com/jquery-1.7.2.min.js'></script>
-    <script src='/js/bootstrap.js'></script>
-    <script src='/js/app.js'></script>
-  </body>
-</html>
+  </form>
+</div>
