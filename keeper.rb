@@ -1,52 +1,55 @@
 require 'date'
 
 class Keeper
-  BASE = 'deploy'
-
   class << self
     attr_accessor :redis
   end
 
-  def get(id)
-    hash = Hash.new
-
-    Deploy.attrs.each do |a|
-      hash[a] = redis.get(key(id, a))
-    end
-
-    hash[:start] = Time.at(hash[:start].to_i).to_datetime
-
-    Deploy.from_hash(hash)
+  def initialize(namespace)
+    @namespace = namespace
   end
 
-  def log(id, line)
-    redis.append(key(id, 'log'), line)
+  def get(id)
+    hash = redis.hgetall(key(id))
+    hash.keys.each do |key|
+      hash[(key.to_sym rescue key) || key] = hash.delete(key)
+    end
+    hash
+  end
+
+  def get_all
+    arr = []
+    1.upto current_id do |id|
+      arr << redis.hgetall(key(id))
+    end
+  end
+
+  def update_field(id, field, val)
+    redis.hset(key(id), field, val)
   end
 
   def save(hash)
-    hash.each do |k,v|
-      redis.set(key(hash[:id], k), v.to_s)
-    end
+    redis.hmset(key(hash[:id]), *hash.to_a.flatten)
   end
 
   def next_id
-    # Only sets the value if the key doesn't exist
+    # setnx only sets the value if the key doesn't exist
     redis.setnx(counter_key, 0)
 
     # Returns the value of the key after increment
     redis.incr(counter_key)
   end
 
-  def counter_key
-    "next.#{Keeper::BASE}.id"
+  def current_id
+    redis.get(counter_key)
   end
 
-  def key(id, attribute=nil)
-    str = "#{Keeper::BASE}:#{id}"
-    unless attribute.nil?
-      str << ":#{attribute}"
-    end
-    str
+  def counter_key
+    "next.#{@namespace}.id"
+  end
+
+  def key(id)
+    "#{@namespace}:#{id}"
   end
 
   private
@@ -54,5 +57,4 @@ class Keeper
   def redis
     self.class.redis
   end
-
 end

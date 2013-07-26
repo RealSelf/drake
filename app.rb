@@ -9,7 +9,7 @@ require_relative 'keeper'
 class App < Sinatra::Base
   Keeper.redis = Redis.new(:host => "127.0.0.1", :port => 6379)
   Deploy.runner = Runner.new
-  Deploy.keeper = Keeper.new
+  Deploy.keeper = Keeper.new(:deploy)
 
   get '/' do
     erb :index
@@ -17,7 +17,7 @@ class App < Sinatra::Base
 
   post '/deploy/' do
     d = Deploy.new(params[:env], params[:tag], params[:name])
-    d.run!
+    d.run
 
     redirect "/deploy/#{d.id}/"
   end  
@@ -42,6 +42,12 @@ class App < Sinatra::Base
     all = Deploy.get(:all)
 
     erb :'deploy/list', :locals => {:deploys => all}
+  end
+
+  helpers do
+    def h(text)
+      Rack::Utils.escape_html(text)
+    end
   end
 end
 

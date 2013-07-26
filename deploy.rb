@@ -1,33 +1,47 @@
 require 'date'
 require_relative 'runner'
+require_relative 'log'
 
 class Deploy
+  attr_reader :env, :tag, :name, :id, :start, :log, :cmd
+
   class << self
     attr_accessor :runner, :keeper
 
     def get(id)
-      keeper.get(id)
+      attrs = keeper.get(id)
+      from_hash(attrs)
+    end
+
+    def get_all
+      all = []
+      keeper.get_all.each do |attrs|
+        all << from_hash(attrs)
+      end
     end
 
     def from_hash(h)
-      d = self.allocate
-      h.each do |k,v|
-        d.instance_variable_set("@#{k}", v)
-      end
+      d = Deploy.new(h[:env], h[:tag], h[:name])
+      start = h[:start]
+      start = Time.at(start.to_i).to_datetime
+
+      d.instance_variable_set('@id', h[:id])
+      d.instance_variable_set('@start', start)
+      d.log.instance_variable_set('@text', h[:log])
+      d.instance_variable_set('@cmd', h[:cmd])
       d
     end
-
-    def attrs
-      [:id, :env, :tag, :name, :start, :log, :cmd]
-    end
-  end
-
-  attr_reader :env, :tag, :name, :id, :start, :log, :cmd
+  end #self
 
   def initialize(env, tag, name)
     @env = env
     @tag = tag
     @name = name
+
+    callback = lambda { |log|
+      keeper.update_field(@id, :log, log)
+    }
+    @log = Log.new(callback)
   end
 
   def to_hash
@@ -37,7 +51,7 @@ class Deploy
       :tag => @tag,
       :name => @name,
       :start => @start,
-      :log => @log,
+      :log => @log.read,
       :cmd => @cmd
     }
   end
@@ -49,31 +63,22 @@ class Deploy
     keeper.save(to_hash)
   end
 
-  def log_line(line)
-    keeper.log(@id, line)
-  end
-
-  def log
-    @log
-  end
-
   def gen_cmd
-    "cd ~/code/Stock; bundle exec cap chef deploy -s chef_environment=#{@env} -s tag=#{@tag} -s deployed_by=#{@name}"
+    "cd ~/var/www; bundle exec cap deploy -s environment=#{@env} -s tag=#{@tag} -s user=#{@name}"
   end
 
-  def run!
+  def run
     @start = DateTime.now.strftime('%s').to_i
     @cmd = gen_cmd
     save
-    runner.run(self)
+    runner.run(@cmd, @log)
   end
 
   def runner
     self.class.runner
-  end  
+  end
 
   def keeper
     self.class.keeper
   end
-
 end

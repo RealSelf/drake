@@ -1,16 +1,16 @@
 require 'open3'
 
 class Runner
-  def run(deploy)
-    stdin, stdout, stderr, wait_thr = Open3.popen3(deploy.cmd.strip)
+  def run(cmd, log)
+    stdin, stdout, stderr, wait_thr = Open3.popen3(cmd)
 
     # Must close all IO streams explicitly
-    stdin.close  
+    stdin.close
 
     out_thr = Thread.new do
       Thread.current.abort_on_exception = true
       while(line = stdout.gets)
-        deploy.log_line(line)
+        log << line
       end
       stdout.close
     end
@@ -18,7 +18,7 @@ class Runner
     err_thr = Thread.new do
       Thread.current.abort_on_exception = true
       while(line = stderr.gets)
-        deploy.log_line(line)
+        log << line
       end
       stderr.close
     end
