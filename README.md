@@ -12,16 +12,20 @@ Requirements
 Run
 ---
 
-    git clone https://github.com/RealSelf/drake.git
-    cd drake
-    bundle install
-    ruby app.rb
-  
+```bash
+$> git clone https://github.com/RealSelf/drake.git
+$> cd drake
+$> bundle install
+$> ruby app.rb
+```
+
 Test
 ----
 
-    cd drake
-    rspec --format documentation
+```bash
+$> cd drake
+$> rspec --format documentation
+```
 
 Copyright
 ---------
