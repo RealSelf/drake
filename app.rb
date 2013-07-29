@@ -1,12 +1,18 @@
 require 'sinatra/base'
+require 'sinatra/content_for'
+require 'sinatra/json'
+require 'multi_json'
 require 'thin'        # Do we need to require thin?
-require 'json'
 require 'redis'
+
 require_relative 'deploy'
 require_relative 'runner'
 require_relative 'keeper'
 
 class App < Sinatra::Base
+  helpers Sinatra::ContentFor
+  helpers Sinatra::JSON
+
   Keeper.redis = Redis.new(:host => "127.0.0.1", :port => 6379)
   Deploy.runner = Runner.new
   Deploy.keeper = Keeper.new(:deploy)
@@ -31,11 +37,10 @@ class App < Sinatra::Base
   get '/deploy/:id/poll/' do
     d = Deploy.get(params[:id]) or halt(404)
 
-    {
+    json(
       :id => d.id,
-      :status => d.status,
-      :log => d.log
-    }.to_json
+      :log => d.log.read
+    )
   end
 
   get '/deploy/list/' do

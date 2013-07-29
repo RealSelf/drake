@@ -13,5 +13,9 @@
 </div>
 
 <div class="row span8 offset2">
-  <pre><%=h deploy.log.read %></pre>
+  <pre id="output"><%=h deploy.log.read %></pre>
 </div>
+
+<% content_for :js do %>
+  <script src="/js/app.js"></script>
+<% end %>
