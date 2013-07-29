@@ -2,7 +2,7 @@ require 'sinatra/base'
 require 'sinatra/content_for'
 require 'sinatra/json'
 require 'multi_json'
-require 'thin'        # Do we need to require thin?
+require 'thin'                # Do we need to require thin?
 require 'redis'
 
 require_relative 'deploy'
@@ -30,7 +30,6 @@ class App < Sinatra::Base
 
   get '/deploy/:id/' do
     d = Deploy.get(params[:id]) or halt(404)
-    
     erb :'deploy/view', :locals => {:deploy => d}
   end
 

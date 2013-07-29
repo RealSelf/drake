@@ -10,7 +10,12 @@ class Deploy
 
     def get(id)
       attrs = keeper.get(id)
-      from_hash(attrs)
+
+      if attrs
+        from_hash(attrs)
+      else
+        nil
+      end
     end
 
     def get_all

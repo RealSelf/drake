@@ -11,9 +11,15 @@ class Keeper
 
   def get(id)
     hash = redis.hgetall(key(id))
-    hash.keys.each do |key|
-      hash[(key.to_sym rescue key) || key] = hash.delete(key)
+
+    if hash.empty?
+      hash = nil
+    else
+      hash.keys.each do |key|
+        hash[(key.to_sym rescue key) || key] = hash.delete(key)
+      end
     end
+
     hash
   end
 
