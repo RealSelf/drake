@@ -20,7 +20,8 @@ class Drake < Sinatra::Base
 
   Keeper.redis = Redis.new(
     :host => settings.redis[:host], 
-    :port => settings.redis[:port]
+    :port => settings.redis[:port],
+    :db => settings.redis[:db]
   )
   Deploy.runner = Runner.new
   Deploy.keeper = Keeper.new(:deploy)
