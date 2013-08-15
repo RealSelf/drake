@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'sinatra/config_file'
 require 'sinatra/content_for'
 require 'sinatra/json'
 require 'multi_json'
@@ -11,12 +12,19 @@ require_relative 'runner'
 require_relative 'keeper'
 
 class Drake < Sinatra::Base
+  register Sinatra::ConfigFile
   helpers Sinatra::ContentFor
   helpers Sinatra::JSON
 
-  Keeper.redis = Redis.new(:host => "127.0.0.1", :port => 6379)
+  config_file './config/drake.yml'
+
+  Keeper.redis = Redis.new(
+    :host => settings.redis[:host], 
+    :port => settings.redis[:port]
+  )
   Deploy.runner = Runner.new
   Deploy.keeper = Keeper.new(:deploy)
+  Deploy.cmd = settings.cmd
 
   get '/' do
     erb :index

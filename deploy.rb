@@ -1,4 +1,5 @@
 require 'date'
+require 'erb'
 require_relative 'runner'
 require_relative 'log'
 
@@ -6,7 +7,7 @@ class Deploy
   attr_reader :env, :tag, :name, :id, :start, :log, :cmd
 
   class << self
-    attr_accessor :runner, :keeper
+    attr_accessor :runner, :keeper, :cmd
 
     def get(id)
       attrs = keeper.get(id)
@@ -70,7 +71,7 @@ class Deploy
   end
 
   def gen_cmd
-    "cd ~/var/www; bundle exec cap deploy -s environment=#{@env} -s tag=#{@tag} -s user=#{@name}"
+    ERB.new(self.class.cmd).result(binding)
   end
 
   def run
