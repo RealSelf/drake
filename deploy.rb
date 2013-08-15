@@ -1,5 +1,6 @@
 require 'date'
 require 'erb'
+require 'bundler'
 require_relative 'runner'
 require_relative 'log'
 
@@ -78,7 +79,9 @@ class Deploy
     @start = DateTime.now.strftime('%s').to_i
     @cmd = gen_cmd
     save
-    runner.run(@cmd, @log)
+    Bundler.with_clean_env do
+      runner.run(@cmd, @log)
+    end
   end
 
   def runner
