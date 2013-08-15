@@ -4,12 +4,13 @@ require 'sinatra/json'
 require 'multi_json'
 require 'thin'                # Do we need to require thin?
 require 'redis'
+require 'active_support/core_ext/string'
 
 require_relative 'deploy'
 require_relative 'runner'
 require_relative 'keeper'
 
-class App < Sinatra::Base
+class Drake < Sinatra::Base
   helpers Sinatra::ContentFor
   helpers Sinatra::JSON
 
@@ -26,7 +27,12 @@ class App < Sinatra::Base
     d.run
 
     redirect "/deploy/#{d.id}/"
-  end  
+  end
+
+  get '/deploy/list/' do
+    all = Deploy.get_all
+    erb :'deploy/list', :locals => {:deploys => all}
+  end
 
   get '/deploy/:id/' do
     d = Deploy.get(params[:id]) or halt(404)
@@ -38,7 +44,7 @@ class App < Sinatra::Base
 
     json(
       :id => d.id,
-      :log => d.log.read
+      :log => h(d.log.read)
     )
   end
 
@@ -54,5 +60,3 @@ class App < Sinatra::Base
     end
   end
 end
-
-App.run!({:port => 3000})

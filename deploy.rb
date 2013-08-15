@@ -23,6 +23,7 @@ class Deploy
       keeper.get_all.each do |attrs|
         all << from_hash(attrs)
       end
+      all
     end
 
     def from_hash(h)

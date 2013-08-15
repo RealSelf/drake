@@ -15,19 +15,17 @@ class Keeper
     if hash.empty?
       hash = nil
     else
-      hash.keys.each do |key|
-        hash[(key.to_sym rescue key) || key] = hash.delete(key)
-      end
+      hash.symbolize_keys!
     end
-
     hash
   end
 
   def get_all
     arr = []
     1.upto current_id do |id|
-      arr << redis.hgetall(key(id))
+      arr << get(id)
     end
+    arr
   end
 
   def update_field(id, field, val)
@@ -47,7 +45,7 @@ class Keeper
   end
 
   def current_id
-    redis.get(counter_key)
+    redis.get(counter_key).to_i
   end
 
   def counter_key

@@ -1,0 +1,36 @@
+<% content_for :nav do %>
+  <script src="/js/app.js"></script>
+<% end %>
+<div class="row span8 offset2">
+  <table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Time</th>
+      <th>Environment</th>
+      <th>Tag</th>
+      <th>User</th>
+      <th>Command</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% deploys.each do |deploy| %>
+  <%
+     if deploy.env == 'production'
+       env_label = 'label-important'
+     else
+       env_label = 'label-default'
+     end
+  %>
+    <tr>
+      <td><%= deploy.id %></td>
+      <td><%= deploy.start.strftime('%l:%M%P') %> <small class="muted"><%= deploy.start.strftime('%m/%d/%y') %></small></td>
+      <td><span class="label <%= env_label %>"><%= deploy.env %></span></td>
+      <td><span class="label label-info"><%= deploy.tag %></span></td>
+      <td><%= deploy.name %></td>
+      <td><%= deploy.cmd.truncate(20) %></td>
+    </tr>
+  <% end %>
+  </tbody>
+  </table>
+</div>

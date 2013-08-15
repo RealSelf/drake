@@ -1,0 +1,3 @@
+require './drake'
+
+run Drake
