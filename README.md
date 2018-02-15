@@ -1,3 +1,5 @@
+drake is long deprecated and has been archived - be aware that the current configuration references libraries with known security vulnerabilities.
+
 drake
 =====
 Simple web based deployment automation tool buit with [Sinatra](http://www.sinatrarb.com/).
